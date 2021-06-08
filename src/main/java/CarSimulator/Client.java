@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 class Client{
     /**
@@ -25,10 +24,9 @@ class Client{
 
     /**
      * Connect the socket and the corresponding streams
-     * @throws UnknownHostException
      * @throws IOException
      */
-    public void connect(int socketPort) throws UnknownHostException, IOException{
+    public void connect(int socketPort) throws IOException{
         socket = new Socket("localhost", socketPort);
         inStream = new DataInputStream(socket.getInputStream());
         outStream = new DataOutputStream(socket.getOutputStream());

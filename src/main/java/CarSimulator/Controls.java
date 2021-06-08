@@ -9,6 +9,11 @@ class Controls{
 
     Controls(){}
 
+    Controls(double steeringAngle, double targetVelocity){
+        setSteeringAngle(steeringAngle);
+        setTargetVelocity(targetVelocity);
+    }
+
     /**
      * 
      * @param steeringAngle Steering angle to set in degrees.
@@ -40,6 +45,8 @@ class Controls{
     public void setTargetVelocity(double targetVelocity){
         if(targetVelocity > maxTargetVelocity){
             this.targetVelocity = maxTargetVelocity;
+        } else if(targetVelocity < 0){
+            this.targetVelocity = 0;
         } else{
             this.targetVelocity = targetVelocity;
         }

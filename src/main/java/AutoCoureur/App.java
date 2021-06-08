@@ -17,6 +17,7 @@ import NeuralNetwork.NeuralNet;
 public class App {
 
     public static void main(String[] args) {
+
         int[] layers = { 8,6,4,2 };
         NeuralNet nn = new NeuralNet(layers);
 
@@ -42,6 +43,7 @@ public class App {
         // for (int i = 0; i < amountOfCars; i++) {
         //     cars[i].close();
         // }
+
 
     }
 }
