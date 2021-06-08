@@ -237,20 +237,18 @@ class Visualisation (sp.Scene):
         return self.getPosition().within(self.circuitgon)
 
     def getProgress(self):
-        if self.progress >= 100:
-            return 100
 
         distances = np.sum((self.leftConesPos-self.getPosition())**2, axis=1)
-        nearestCone = np.argmin(distances)
+        nearestCones = np.sort(np.argpartition(distances, 2)[:2])
         numOfInnerCones = len(self.leftConesPos)
 
-        newConeDiff = 1 if (self.lastCone == numOfInnerCones-1 and nearestCone == 0) else (nearestCone - self.lastCone)
+        coneToConeVector = self.leftConesPos[nearestCones[1]] - self.leftConesPos[nearestCones[0]]
+        coneToConeDistanceSquared = np.sum(coneToConeVector**2)
+        coneToPosVector = np.array(self.getPosition()) - self.leftConesPos[nearestCones[0]]
 
-        if newConeDiff == 1 or newConeDiff == -1:
-            self.progress += (newConeDiff / numOfInnerCones) * 100
-            self.lastCone = nearestCone
+        lineProgress = np.dot(coneToConeVector, coneToPosVector) / coneToConeDistanceSquared
 
-        return self.progress
+        return ((nearestCones[0] + lineProgress) / numOfInnerCones) * 100
 
     def getLapTime(self):
         return sp.world.time()
