@@ -1,6 +1,6 @@
 // Author: Stefan Beenen
 
-package SymbolChecker;
+package NeuralNetwork;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;

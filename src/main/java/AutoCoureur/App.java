@@ -1,6 +1,7 @@
 package AutoCoureur;
 
 import CarSimulator.Car;
+import NeuralNetTrainer.NeuralNetTrainer;
 import NeuralNetwork.NeuralNet;
 
 /**
@@ -17,31 +18,16 @@ import NeuralNetwork.NeuralNet;
 public class App {
 
     public static void main(String[] args) {
+        
         int[] layers = { 8,6,4,2 };
         NeuralNet nn = new NeuralNet(layers);
 
-        // train the Auto Coureur
-        
-
-        
-        // int amountOfCars = 5;
-        // Car cars[] = new Car[amountOfCars];
-
-        // for (int i = 0; i < amountOfCars; i++) {
-        //     cars[i] = new Car();
-        // }
-
-        
-        // for (int i = 0; i < amountOfCars; i++) {
-        //     String s = cars[i].control(cars[i].recvProperties());
-        //     // cars[i].sendControls();
-        //     System.out.println(s);
-        // }
+        for (int i = 0; i < 2; i++) {
+            nn.makeNN(10.0);
+            nn.setEdges(NeuralNetTrainer.train(nn.getNeuralNets())); 
+        }
 
 
-        // for (int i = 0; i < amountOfCars; i++) {
-        //     cars[i].close();
-        // }
 
     }
 }

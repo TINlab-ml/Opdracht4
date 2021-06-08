@@ -6,13 +6,15 @@ Authors
 */
 package NeuralNetwork;
 
+import java.util.ArrayList;
+
 public class NeuralNet {
 
-    private double[][][] edges;
-
+    private double[][][] edges; //160
+    private ArrayList<double[][][]> neuralNets ;
 
     public NeuralNet(int[] layers) {
-
+        
         edges = new double[layers.length - 1][][];
         double initEdgeWeight = 1;
 
@@ -44,6 +46,59 @@ public class NeuralNet {
             output = MatMath.sigmoid(output);
         }
         return MatMath.norm(output);
+    }
+
+    public void makeNN(double weightChange) {
+        this.neuralNets = new ArrayList<double[][][]>(); // Create an ArrayList object
+        for (int layer = 0; layer < edges.length; layer++) {
+            for (int row = 0; row < edges[layer].length; row++) {
+                for (int col = 0; col < edges[layer][row].length; col++) {
+                    int[] currentIndex = {layer, row, col};
+                    
+                    this.neuralNets.add(changeEdge( edges,currentIndex,  weightChange));
+                    this.neuralNets.add(changeEdge( edges,currentIndex,  -weightChange));
+
+                    }
+                }
+            }
+    }
+
+    private double[][][] changeEdge( double[][][] edges ,int[] edgeIndex,double weightChange) {
+        edges[edgeIndex[0]][edgeIndex[1]][edgeIndex[2]] += weightChange;
+
+        double[][][] newEdges = new double[edges.length][][];
+
+
+        for (int layer = 0; layer < edges.length ;layer++) {
+            for (int row = 0; row < edges[layer].length; row++) {
+                newEdges[layer] = new double[edges[layer].length][edges[layer][0].length];
+            }
+        }
+
+        newEdges = copyOf3Dim(edges, newEdges);
+
+        edges[edgeIndex[0]][edgeIndex[1]][edgeIndex[2]] -= weightChange;
+        return newEdges;
+    } 
+
+    private double[][][] copyOf3Dim(double[][][] array, double[][][]copy) {
+
+        for (int x = 0; x < array.length; x++) {  
+            for (int y = 0; y < array[x].length; y++) {  
+                for (int z = 0; z < array[x][y].length; z++) {
+                    copy[x][y][z] = array[x][y][z];  
+                }  
+            }  
+        } 
+        return copy;
+    }
+
+
+    public ArrayList<double[][][]> getNeuralNets() {
+        return neuralNets;
+    }
+    public void setEdges(double[][][] edges) {
+        this.edges = edges;
     }
 
 }
