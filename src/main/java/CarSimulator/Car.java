@@ -47,7 +47,7 @@ public class Car{
      */
     public Properties recvProperties(){
         String incomingString = client.recv();
-        System.out.println(incomingString);
+        // System.out.println(incomingString);
         properties = gson.fromJson(incomingString, Properties.class);
         return properties;
     }

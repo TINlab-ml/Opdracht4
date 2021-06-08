@@ -48,6 +48,19 @@ public class NeuralNet {
         return MatMath.norm(output);
     }
 
+    public static double[][] predict(double[][][] nn, double[] inputValues) {
+        double[][] input = MatMath.fromList(inputValues);
+        double[][] output = input;
+
+        for (int layer = 0; layer < nn.length; layer++) {
+            input = output;
+            output = MatMath.multiply(nn[layer], input);
+            output = MatMath.sigmoid(output);
+        }
+        return MatMath.norm(output);
+    }
+
+
     public void makeNN(double weightChange) {
         this.neuralNets = new ArrayList<double[][][]>(); // Create an ArrayList object
         for (int layer = 0; layer < edges.length; layer++) {

@@ -1,6 +1,5 @@
 package AutoCoureur;
 
-import CarSimulator.Car;
 import NeuralNetTrainer.NeuralNetTrainer;
 import NeuralNetwork.NeuralNet;
 

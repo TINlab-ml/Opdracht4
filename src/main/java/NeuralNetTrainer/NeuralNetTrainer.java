@@ -1,66 +1,64 @@
 package NeuralNetTrainer;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import CarSimulator.Car;
-
+import CarSimulator.Properties;
 import NeuralNetwork.NeuralNet;
+
 
 public class NeuralNetTrainer {
 
 
     public static double[][][] train(ArrayList<double[][][]> listOfnn ) {
+        ArrayList<Data> data = new ArrayList<Data>();
 
 
-        for (double[][][] nn : listOfnn) {
+        for (int indexOfnn = 0; indexOfnn < listOfnn.size(); indexOfnn++) {
+            System.out.println(indexOfnn);
+
             int amountOfCars = 1;
             Car cars[] = new Car[amountOfCars];
 
-            boolean botsing = false, autoVanDeBaan = false, rondjeCompleet = false;
+            for(int i = 0; i < amountOfCars; i++){
+                cars[i] = new Car();
+            }
+            Properties carProperties =null;
+            while(true) { 
 
-            while(true) { // is de auto van de baan of is er een botsing of de auto heeft het rondje gedaan
-
-                // Properties rec = cars[0].recvProperties();
-
-                if(botsing || autoVanDeBaan || rondjeCompleet){
+                carProperties = cars[0].recvProperties();
+                if(carProperties.getCollided()||!carProperties.getIsOnTrack()){
                     break;
                 }
 
-                // double[] vec = new cars[0]; 
-                //lidar de 8 dichtbezijde afstand en hoek er uit
-                /*
-                [
-                    afstand
-                    hoek
-                    afstand
-                    hoek
-                    afstand
-                    hoek
-                    afstand
-                    hoek
-                ]
-                */
-                // nn.predict(vec);
+                double[] nearestConesVector = carProperties.getNearestCones();
+                double[][] carinput = NeuralNet.predict(listOfnn.get(indexOfnn), nearestConesVector);
 
-                String jsonControlString = " "; // double targetVelocity; double steeringAngle;
-
-                // cars[0].sendControls(targetVelocity,targetVelocity);
+                cars[0].sendControls(carinput[0][0],carinput[1][0]);
             }
+
             for (int i = 0; i < amountOfCars; i++) {
                 cars[i].close();
             }
-
-
+           
+            data.add( new Data(carProperties.getProgress(),carProperties.getLapTime(),listOfnn.get(indexOfnn)));
         }
-        // geeft the beste edge treug met waarde verandering. 
-        
+
+        Collections.sort(data, new Comparator<Data>() {
+            @Override
+            public int compare(Data d1, Data d2) {
+                // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+                return d1.progress > d2.progress ? -1 : (d1.progress < d2.progress) ? 1 : 0;
+            }
+        });
+
         // double[][][] TheBestNN = sort op the best fitnes;
-        return  null; 
+        return data.get(0).nn ; 
     }
 
     
-    public void fit() {
 
-    }
     
 }
