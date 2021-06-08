@@ -7,6 +7,7 @@ Authors
 package NeuralNetwork;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class NeuralNet {
 
@@ -29,9 +30,15 @@ public class NeuralNet {
     }
 
     void setEdgeWeight(int layer, double initEdgeWeight ){
+
         for (int row = 0; row < edges[layer].length; row++) {
             for (int col = 0; col < edges[layer][row].length; col++) {
-                edges[layer][row][col] = initEdgeWeight;
+                Random r = new Random();
+
+                int low = 10;
+                int high = 100;
+
+                edges[layer][row][col] = (double)  r.nextInt(high-low) + low;
             }
         }
     }
