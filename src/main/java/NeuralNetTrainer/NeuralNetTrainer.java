@@ -2,6 +2,8 @@ package NeuralNetTrainer;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
@@ -17,7 +19,7 @@ public class NeuralNetTrainer {
 
     public static double[][][] train(ArrayList<double[][][]> listOfnn ) {
         
-        ExecutorService executor = new ThreadPoolExecutor(6,6 ,0L ,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(listOfnn.size()));
+        ExecutorService executor = new ThreadPoolExecutor(5,10 ,0L ,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(listOfnn.size()));
 
 
         List<Future<Data>> futureList = new ArrayList<Future<Data>>();
@@ -37,25 +39,26 @@ public class NeuralNetTrainer {
             e1.printStackTrace();
         }
 
+        ArrayList<Data> dataArrayList = new ArrayList<Data>();
         for (Future<Data> future : futureList) {
             try {
-                System.out.println( future.get().progress);
+                dataArrayList.add(future.get());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
         }
 
-        // Collections.sort(data, new Comparator<Data>() {
-        //     @Override
-        //     public int compare(Data d1, Data d2) {
-        //         // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
-        //         return d1.progress > d2.progress ? -1 : (d1.progress < d2.progress) ? 1 : 0;
-        //     }
-        // });
+        Collections.sort(dataArrayList, new Comparator<Data>() {
+            @Override
+            public int compare(Data d1, Data d2) {
+                // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+                return d1.progress > d2.progress ? -1 : (d1.progress < d2.progress) ? 1 : 0;
+            }
+        });
 
         // double[][][] TheBestNN = sort op the best fitnes;
         executor.shutdown();    
-        return null ; 
+        return dataArrayList.get(0).nn ; 
     }
 
     
