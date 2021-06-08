@@ -25,8 +25,5 @@ public class App {
             nn.makeNN(10.0);
             nn.setEdges(NeuralNetTrainer.train(nn.getNeuralNets())); 
         }
-
-
-
     }
 }
