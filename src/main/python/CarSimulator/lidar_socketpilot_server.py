@@ -57,7 +57,7 @@ class LidarSocketpilotServer:
                             'lidarDistances': sp.world.visualisation.lidar.distances,
                             'lidarHalfApertureAngle': sp.world.visualisation.lidar.halfApertureAngle,
                             'isOnTrack': sp.world.visualisation.isOnTrack(),
-                            'progress': "{:.1f}".format(sp.world.visualisation.getProgress()),
+                            'progress': "{:.3f}".format(sp.world.visualisation.getProgress()),
                             'lapTime': "{:.2f}".format(sp.world.visualisation.getLapTime()),
                             'collided': sp.world.visualisation.floor.scene.collided
                         }
