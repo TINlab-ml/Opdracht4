@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class NeuralNet {
 
-    private double[][][] edges; //160
+    private double[][][] edges; 
     private ArrayList<double[][][]> neuralNets ;
 
     public NeuralNet(int[] layers) {
@@ -35,7 +35,7 @@ public class NeuralNet {
             for (int col = 0; col < edges[layer][row].length; col++) {
                 Random r = new Random();
 
-                int low = 10;
+                int low = -100;
                 int high = 100;
 
                 edges[layer][row][col] = (double)  r.nextInt(high-low) + low;
@@ -121,4 +121,7 @@ public class NeuralNet {
         this.edges = edges;
     }
 
+    public double[][][] getEdges() {
+        return edges;
+    }
 }
