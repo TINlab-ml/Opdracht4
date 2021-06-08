@@ -35,8 +35,8 @@ public class NeuralNet {
             for (int col = 0; col < edges[layer][row].length; col++) {
                 Random r = new Random();
 
-                int low = -100;
-                int high = 100;
+                int low = 500;
+                int high = 1000;
 
                 edges[layer][row][col] = (double)  r.nextInt(high-low) + low;
             }

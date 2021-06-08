@@ -5,8 +5,8 @@ import java.io.IOException;
 import com.google.gson.Gson;
 
 public class Car{
-    private static int socketPort = 50012;
-    private static int socketPortCounter = 50012;
+    private  int socketPort = 50000;
+    private  int socketPortCounter = 50000;
 
     private Gson gson;
 
@@ -19,25 +19,35 @@ public class Car{
     /**
      * Set up a client connection to be able to use the car
      */
-    public Car(){
+    public Car(int carId){
+        synchronized (this) {
         gson = new Gson();
         properties = new Properties();
         controls = new Controls();
 
-        if (socketPortCounter>10){
-            socketPortCounter = socketPort;
-        }
+            socketPortCounter += carId;
 
-        try{
-            pythonWorld = Runtime.getRuntime().exec("cmd /c conda activate Tinlab_opdracht_4 && start pythonServer.bat " + socketPortCounter);
-            Thread.sleep(2000);
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-        client = new Client(socketPortCounter);
+            System.out.println();
+            try{
+                pythonWorld = Runtime.getRuntime().exec("cmd /c conda activate Tinlab_opdracht_4 && start pythonServer.bat " + socketPortCounter);
+                Thread.sleep(2000);
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+            client = new Client(socketPortCounter);
 
-        socketPortCounter++;
+            socketPortCounter++;
+        }
     }
+
+    synchronized void incrementSync() {
+        socketPortCounter +=  1;
+    }
+
+    synchronized void resetSocketPortCounter() {
+        socketPortCounter  = socketPort;
+    }
+
 
     /**
      * 
