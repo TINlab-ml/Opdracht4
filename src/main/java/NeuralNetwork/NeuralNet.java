@@ -6,6 +6,9 @@ Authors
 */
 package NeuralNetwork;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -114,12 +117,28 @@ public class NeuralNet {
     }
 
 
+    public int writeToFile(String fileName) {
+        try{
+            FileOutputStream fos = new FileOutputStream(fileName);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(this.edges);
+            oos.close();
+            return 0;
+        } catch (IOException e){
+            return -1;
+        }
+    }
+
+
     public ArrayList<double[][][]> getNeuralNets() {
         return neuralNets;
     }
+
+
     public void setEdges(double[][][] edges) {
         this.edges = edges;
     }
+
 
     public double[][][] getEdges() {
         return edges;
