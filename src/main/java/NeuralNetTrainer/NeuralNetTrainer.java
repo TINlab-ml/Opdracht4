@@ -19,7 +19,7 @@ public class NeuralNetTrainer {
 
     public static double[][][] train(ArrayList<double[][][]> listOfnn ) {
         
-        ExecutorService executor = new ThreadPoolExecutor(5,10 ,0L ,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(listOfnn.size()));
+        ExecutorService executor = new ThreadPoolExecutor(4,10 ,0L ,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(listOfnn.size()));
 
 
         List<Future<Data>> futureList = new ArrayList<Future<Data>>();
