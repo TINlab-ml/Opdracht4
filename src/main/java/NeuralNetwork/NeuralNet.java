@@ -132,16 +132,17 @@ public class NeuralNet {
         oos.close();
     }
 
-    
+
     public static NeuralNet fromFile(String fileName) throws IOException {
         try {
             FileInputStream fis = new FileInputStream(fileName);
             ObjectInputStream ois = new ObjectInputStream(fis);
-
-            return new NeuralNet((double[][][]) ois.readObject());
+            NeuralNet neuralNet = new NeuralNet((double[][][]) ois.readObject())
+            ois.close();
+            return neuralNet;
 
         } catch (Exception e) {
-            throw new IOException("Couldn't read NeuralNet from file")
+            throw new IOException("Couldn't read NeuralNet from file");
         }
     }
 
