@@ -16,6 +16,8 @@ import NeuralNetwork.NeuralNet;
  */
 public class App {
 
+    public static boolean stopTheProgram = false;  
+
     public static void main(String[] args) {
         
         int[] layers = { 8,6,4,2 };

@@ -34,6 +34,9 @@ public class Car{
             } catch(Exception e){
                 e.printStackTrace();
             }
+
+            
+
             client = new Client(socketPortCounter);
 
             socketPortCounter++;

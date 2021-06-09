@@ -12,14 +12,17 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import AutoCoureur.App;
+
 
 
 public class NeuralNetTrainer {
 
 
     public static double[][][] train(ArrayList<double[][][]> listOfnn ) {
+        int programsThread = 3;
         
-        ExecutorService executor = new ThreadPoolExecutor(4,10 ,0L ,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(listOfnn.size()));
+        ExecutorService executor = new ThreadPoolExecutor(programsThread,programsThread,0L ,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(listOfnn.size()));
 
 
         List<Future<Data>> futureList = new ArrayList<Future<Data>>();
@@ -32,13 +35,11 @@ public class NeuralNetTrainer {
         // https://www.journaldev.com/1090/java-callable-future-example
         for (WorkThread workThread : workThreadList) {
             futureList.add(executor.submit(workThread));
+            if(App.stopTheProgram){
+                System.exit(0);
+            }
         }
-        try {
-            executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        }
-
+        
         ArrayList<Data> dataArrayList = new ArrayList<Data>();
         for (Future<Data> future : futureList) {
             try {
@@ -47,7 +48,8 @@ public class NeuralNetTrainer {
                 e.printStackTrace();
             }
         }
-
+        
+        
         Collections.sort(dataArrayList, new Comparator<Data>() {
             @Override
             public int compare(Data d1, Data d2) {
@@ -55,6 +57,12 @@ public class NeuralNetTrainer {
                 return d1.progress > d2.progress ? -1 : (d1.progress < d2.progress) ? 1 : 0;
             }
         });
+
+        try {
+            executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
 
         // double[][][] TheBestNN = sort op the best fitnes;
         executor.shutdown();    
