@@ -6,6 +6,11 @@ Authors
 */
 package NeuralNetwork;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -29,14 +34,20 @@ public class NeuralNet {
         }
     }
 
+
+    public NeuralNet(double[][][] edges) {
+        this.edges = edges;
+    }
+
+
     void setEdgeWeight(int layer, double initEdgeWeight ){
 
         for (int row = 0; row < edges[layer].length; row++) {
             for (int col = 0; col < edges[layer][row].length; col++) {
                 Random r = new Random();
 
-                int low = 500;
-                int high = 1000;
+                int low = -100;
+                int high = 100;
 
                 edges[layer][row][col] = (double)  r.nextInt(high-low) + low;
             }
@@ -114,14 +125,39 @@ public class NeuralNet {
     }
 
 
+    public void writeToFile(String fileName) throws IOException {
+        FileOutputStream fos = new FileOutputStream(fileName);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(this.edges);
+        oos.close();
+    }
+
+
+    public static NeuralNet fromFile(String fileName) throws IOException {
+        try {
+            FileInputStream fis = new FileInputStream(fileName);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            NeuralNet neuralNet = new NeuralNet((double[][][]) ois.readObject());
+            ois.close();
+            return neuralNet;
+
+        } catch (Exception e) {
+            throw new IOException("Couldn't read NeuralNet from file");
+        }
+    }
+
     public ArrayList<double[][][]> getNeuralNets() {
         return neuralNets;
     }
+
+
     public void setEdges(double[][][] edges) {
         this.edges = edges;
     }
 
+
     public double[][][] getEdges() {
         return edges;
     }
+
 }

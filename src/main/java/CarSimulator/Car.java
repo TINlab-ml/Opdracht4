@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.google.gson.Gson;
 
 public class Car{
-    private  int socketPort = 50000;
+
     private  int socketPortCounter = 50000;
 
     private Gson gson;
@@ -30,7 +30,7 @@ public class Car{
             System.out.println();
             try{
                 pythonWorld = Runtime.getRuntime().exec("cmd /c activate Tinlab_opdracht_4 && start pythonServer.bat " + socketPortCounter);
-                Thread.sleep(2000);
+                Thread.sleep(4000);
             } catch(Exception e){
                 e.printStackTrace();
             }
@@ -43,13 +43,6 @@ public class Car{
         }
     }
 
-    synchronized void incrementSync() {
-        socketPortCounter +=  1;
-    }
-
-    synchronized void resetSocketPortCounter() {
-        socketPortCounter  = socketPort;
-    }
 
 
     /**

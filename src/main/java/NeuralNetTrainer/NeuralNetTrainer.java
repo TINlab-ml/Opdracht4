@@ -20,7 +20,7 @@ public class NeuralNetTrainer {
 
 
     public static double[][][] train(ArrayList<double[][][]> listOfnn ) {
-        int programsThread = 3;
+        int programsThread = 4;
         
         ExecutorService executor = new ThreadPoolExecutor(programsThread,programsThread,0L ,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(listOfnn.size()));
 
@@ -64,13 +64,10 @@ public class NeuralNetTrainer {
             e1.printStackTrace();
         }
 
-        for (Data data : dataArrayList) {
-            System.out.println(data.progress);
-        }
-
 
         // double[][][] TheBestNN = sort op the best fitnes;
         executor.shutdown();    
+        System.out.println("the best progress: "+dataArrayList.get(0).progress);
         return dataArrayList.get(0).nn ; 
     }
 

@@ -49,7 +49,7 @@ class WorkThread implements Callable<Data> {
         }
        
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-        System.out.println( id + " " + timeStamp);
+        System.out.println( id + " " + timeStamp + " "+ carProperties.getProgress());
 
         return  new Data(carProperties.getProgress(),carProperties.getLapTime(),edges);
     }
