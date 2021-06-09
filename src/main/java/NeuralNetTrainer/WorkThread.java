@@ -37,6 +37,7 @@ class WorkThread implements Callable<Data> {
 
             double[] nearestConesVector = carProperties.getNearestCones();
             double[][] carinput = NeuralNet.predict(edges, nearestConesVector);
+            
             cars[0].sendControls(carinput[0][0],carinput[1][0]);
         }
 

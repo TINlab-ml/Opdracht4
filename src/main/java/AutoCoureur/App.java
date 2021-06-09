@@ -23,7 +23,7 @@ public class App {
         int[] layers = { 8,6,4,2 };
         NeuralNet nn = new NeuralNet(layers);
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 10; i++) {
             nn.makeNN(10.0);
             nn.setEdges(NeuralNetTrainer.train(nn.getNeuralNets())); 
         }

@@ -64,6 +64,11 @@ public class NeuralNetTrainer {
             e1.printStackTrace();
         }
 
+        for (Data data : dataArrayList) {
+            System.out.println(data.progress);
+        }
+
+
         // double[][][] TheBestNN = sort op the best fitnes;
         executor.shutdown();    
         return dataArrayList.get(0).nn ; 
