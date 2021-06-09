@@ -15,7 +15,7 @@ public class NeuralNetTrainer {
 
 
     public static double[][][] train(ArrayList<double[][][]> listOfnn,int id ) {
-        int programsThread =10;
+        int programsThread =8;
         
         ExecutorService executor = new ThreadPoolExecutor(programsThread,programsThread,0L ,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(listOfnn.size()));
 
