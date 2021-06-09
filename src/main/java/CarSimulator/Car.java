@@ -1,12 +1,13 @@
 package CarSimulator;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 import com.google.gson.Gson;
 
 public class Car{
-
-    private  int socketPortCounter = 50000;
+    private static final long waitingTimeBeforeConnect = 500;
+    private int socketPortCounter = 50000;
 
     private Gson gson;
 
@@ -19,31 +20,22 @@ public class Car{
     /**
      * Set up a client connection to be able to use the car
      */
-    public Car(int carId){
-        synchronized (this) {
+    public Car(int id){
         gson = new Gson();
         properties = new Properties();
         controls = new Controls();
 
-            socketPortCounter += carId;
+        socketPortCounter += id;
 
-            System.out.println();
-            try{
-                pythonWorld = Runtime.getRuntime().exec("cmd /c activate Tinlab_opdracht_4 && start pythonServer.bat " + socketPortCounter);
-                Thread.sleep(4000);
-            } catch(Exception e){
-                e.printStackTrace();
-            }
-
-            
-
-            client = new Client(socketPortCounter);
-
-            socketPortCounter++;
+        try{
+            pythonWorld = Runtime.getRuntime().exec("cmd /c activate Tinlab_opdracht_4 && start pythonServer.bat " + socketPortCounter);
+            Thread.sleep(waitingTimeBeforeConnect);
+        } catch(Exception e){
+            e.printStackTrace();
         }
+        client = new Client(socketPortCounter);
+
     }
-
-
 
     /**
      * 
@@ -55,9 +47,24 @@ public class Car{
 
     /**
      * Receive the properties of the car from the world and set them in the properties
+     * Reconnect when a SocketTimeoutException is thrown
+     * Close the program when an IOException is thrown
+     * @return properties object
      */
     public Properties recvProperties(){
-        String incomingString = client.recv();
+        String incomingString = "";
+        boolean received = false;
+        while(!received){
+            try{
+                incomingString = client.recv();
+                received = true;
+            } catch(SocketTimeoutException e){
+                client.connect();
+            } catch(IOException e){
+                close();
+                System.exit(1);
+            }
+        }
         // System.out.println(incomingString);
         properties = gson.fromJson(incomingString, Properties.class);
         return properties;
@@ -85,6 +92,5 @@ public class Car{
                 e.printStackTrace();
             }
         });
-
     }
 }

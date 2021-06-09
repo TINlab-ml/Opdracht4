@@ -22,7 +22,7 @@ public class NeuralNetTrainer {
     public static double[][][] train(ArrayList<double[][][]> listOfnn ) {
         int programsThread = 4;
         
-        ExecutorService executor = new ThreadPoolExecutor(programsThread,programsThread,0L ,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(listOfnn.size()));
+        ExecutorService executor = new ThreadPoolExecutor(programsThread,programsThread*2,0L ,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(listOfnn.size()));
 
 
         List<Future<Data>> futureList = new ArrayList<Future<Data>>();

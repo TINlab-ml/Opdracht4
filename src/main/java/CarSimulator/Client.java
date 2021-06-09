@@ -4,49 +4,58 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 class Client{
     /**
      * The max length of the buffer which is used to send and receive to and from the server
      */
     private static final int maxMessageLength = 2048;
+    private static final int socketTimeout = 100;
+
+    private int socketPort;
     private Socket socket;
     private DataInputStream inStream;
     private DataOutputStream outStream;
 
     public Client(int socketPort){
-        try{
-            connect(socketPort);
-        } catch(Exception e){
-            System.out.println("There is no server running at socket port: " + socketPort);
+        this.socketPort = socketPort;
+        boolean connected = false;
+        long startTime = System.currentTimeMillis();
+        while(!connected){
+            connected = connect();
         }
+        long duration = System.currentTimeMillis() - startTime;
+        System.out.println("Connected to " + socket.getInetAddress() + ":" + socketPort + " in " + duration);
     }
 
     /**
      * Connect the socket and the corresponding streams
-     * @throws IOException
+     * @return true when connected, false when an IOException occured
      */
-    public void connect(int socketPort) throws IOException{
-        socket = new Socket("localhost", socketPort);
-        inStream = new DataInputStream(socket.getInputStream());
-        outStream = new DataOutputStream(socket.getOutputStream());
+    public boolean connect(){
+        try{
+            socket = new Socket("localhost", socketPort);
+            socket.setSoTimeout(socketTimeout);
+            inStream = new DataInputStream(socket.getInputStream());
+            outStream = new DataOutputStream(socket.getOutputStream());
+            return true;
+        } catch (IOException e){
+            // System.out.println("Not able to connect to socket on port " + socketPort + "...");
+            return false;
+        }
     }
 
     /**
      * Receive a message from the socket server
      * @return The received string without leading of trailing whitespace
+     * @throws SocketTimeoutException When the socket is not connected right to the server
+     * @throws IOException When there is no working server anymore
      */
-    public String recv(){
+    public String recv() throws SocketTimeoutException, IOException{
         byte[] inBytes = new byte [maxMessageLength];
-        String inString = "";
-        try{
-            inStream.readFully(inBytes, 0, maxMessageLength);
-            inString = new String(inBytes, "ASCII");
-        } catch(Exception e){
-            e.printStackTrace();
-            System.exit(0);
-        }
-        return inString.trim();
+        inStream.readFully(inBytes, 0, maxMessageLength);
+        return (new String(inBytes, "ASCII")).trim();
     }
 
     /**
