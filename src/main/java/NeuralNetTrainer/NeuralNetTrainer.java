@@ -1,8 +1,10 @@
 package NeuralNetTrainer;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 
 import CarSimulator.Car;
 import CarSimulator.Properties;
@@ -16,8 +18,8 @@ public class NeuralNetTrainer {
         ArrayList<Data> data = new ArrayList<Data>();
 
 
+
         for (int indexOfnn = 0; indexOfnn < listOfnn.size(); indexOfnn++) {
-            System.out.println(indexOfnn);
 
             int amountOfCars = 1;
             Car cars[] = new Car[amountOfCars];
@@ -35,7 +37,6 @@ public class NeuralNetTrainer {
 
                 double[] nearestConesVector = carProperties.getNearestCones();
                 double[][] carinput = NeuralNet.predict(listOfnn.get(indexOfnn), nearestConesVector);
-
                 cars[0].sendControls(carinput[0][0],carinput[1][0]);
             }
 
@@ -44,6 +45,8 @@ public class NeuralNetTrainer {
             }
            
             data.add( new Data(carProperties.getProgress(),carProperties.getLapTime(),listOfnn.get(indexOfnn)));
+            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+            System.out.println( indexOfnn + " " + timeStamp);
         }
 
         Collections.sort(data, new Comparator<Data>() {

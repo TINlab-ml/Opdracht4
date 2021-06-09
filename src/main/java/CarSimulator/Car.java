@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.google.gson.Gson;
 
 public class Car{
+    private static int socketPort = 50012;
     private static int socketPortCounter = 50012;
 
     private Gson gson;
@@ -22,6 +23,10 @@ public class Car{
         gson = new Gson();
         properties = new Properties();
         controls = new Controls();
+
+        if (socketPortCounter>10){
+            socketPortCounter = socketPort;
+        }
 
         try{
             pythonWorld = Runtime.getRuntime().exec("cmd /c conda activate Tinlab_opdracht_4 && start pythonServer.bat " + socketPortCounter);
