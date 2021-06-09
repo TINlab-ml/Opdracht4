@@ -61,8 +61,11 @@ public class Car{
             } catch(SocketTimeoutException e){
                 client.connect();
             } catch(IOException e){
+
+                System.out.println("Car: recvProperties");   
                 close();
-                System.exit(1);
+                
+                // System.exit(1);
             }
         }
         // System.out.println(incomingString);

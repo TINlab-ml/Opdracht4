@@ -22,11 +22,17 @@ class Client{
         this.socketPort = socketPort;
         boolean connected = false;
         long startTime = System.currentTimeMillis();
+        
         while(!connected){
             connected = connect();
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {}
+            
         }
         long duration = System.currentTimeMillis() - startTime;
-        System.out.println("Connected to " + socket.getInetAddress() + ":" + socketPort + " in " + duration);
+        // System.out.println("Connected to " + socket.getInetAddress() + ":" + socketPort + " in " + duration);
     }
 
     /**

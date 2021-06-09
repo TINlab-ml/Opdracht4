@@ -35,15 +35,20 @@ public class App {
         }
 
 
+        int c = 0;
+        while (true) {
 
-        for (int i = 0; i < 10; i++) {
             nn.makeNN(10.0);
-            nn.setEdges(NeuralNetTrainer.train(nn.getNeuralNets())); 
+            nn.setEdges(NeuralNetTrainer.train(nn.getNeuralNets(), c)); 
 
             try {
                 nn.writeToFile("NN.txt");
-            } catch (IOException e) {}
+            } catch (IOException e) {
+                System.out.println("Write to file failed");
+            }
 
+            c++;
         }
+
     }
 }
