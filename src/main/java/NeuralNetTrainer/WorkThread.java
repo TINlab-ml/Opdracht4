@@ -31,10 +31,6 @@ class WorkThread implements Callable<Data> {
 
             carProperties = cars[0].recvProperties();
 
-            if (carProperties == null) {
-                System.exit(-1);
-            }
-
             if(carProperties.getCollided()||!carProperties.getIsOnTrack()){
                 break;
             }
