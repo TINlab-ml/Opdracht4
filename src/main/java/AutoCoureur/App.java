@@ -38,7 +38,7 @@ public class App {
         int c = 0;
         while (true) {
 
-            nn.makeNN(10.0);
+            nn.makeNN(1000.0);
             nn.setEdges(NeuralNetTrainer.train(nn.getNeuralNets(), c)); 
 
             try {
