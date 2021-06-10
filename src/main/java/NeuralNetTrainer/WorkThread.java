@@ -12,9 +12,8 @@ class WorkThread implements Callable<Data> {
     private double[][][] edges;
     private int genId;
     private int poolId;
-    
 
-    public WorkThread(double[][][] edges, int genId ,int poolId) {
+    public WorkThread(double[][][] edges, int genId, int poolId) {
         this.edges = edges;
         this.genId = genId;
         this.poolId = poolId;
@@ -25,32 +24,35 @@ class WorkThread implements Callable<Data> {
         int amountOfCars = 1;
         Car cars[] = new Car[amountOfCars];
 
-        for(int i = 0; i < amountOfCars; i++){
+        for (int i = 0; i < amountOfCars; i++) {
             cars[i] = new Car(poolId);
         }
-        Properties carProperties =null;
-        while(true) { 
+        Properties carProperties = null;
+
+        String reden = "";
+        while (true) {
 
             carProperties = cars[0].recvProperties();
 
-            if(carProperties.getCollided()||!carProperties.getIsOnTrack()){
+            if (carProperties.getCollided() || !carProperties.getIsOnTrack()) {
+                reden ="van de baan af of botsing" ;
                 break;
             }
 
             double[] ray = carProperties.getRay();
-            double[][] carinput = NeuralNet.predict(edges, ray);
-            
-            cars[0].sendControls(carinput[0][0],carinput[1][0]);
-        }
 
+            double[][] carOutput = NeuralNet.predict(edges, ray);
+
+            cars[0].sendControls(carOutput[0][0], carOutput[1][0]);
+        }
 
         for (int i = 0; i < amountOfCars; i++) {
             cars[i].close();
         }
-       
-        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-        System.out.println(genId + " "+ poolId + " " + timeStamp + " "+ carProperties.getProgress());
 
-        return  new Data(carProperties.getProgress(),carProperties.getLapTime(),edges);
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+        System.out.println(genId + " " + poolId + " " + timeStamp + " " + carProperties.getProgress() + " " +  reden);
+
+        return new Data(carProperties.getProgress(), carProperties.getLapTime(), edges);
     }
 }

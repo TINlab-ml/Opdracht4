@@ -61,9 +61,8 @@ public class Car{
             } catch(SocketTimeoutException e){
                 client.connect();
             } catch(IOException e){
-                
                 close();
-
+                System.exit(1);
             }
         }
         // System.out.println(incomingString);
