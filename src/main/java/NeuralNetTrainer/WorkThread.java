@@ -10,12 +10,14 @@ import NeuralNetwork.NeuralNet;
 
 class WorkThread implements Callable<Data> {
     private double[][][] edges;
-    private int id;
+    private int genId;
+    private int poolId;
     
 
-    public WorkThread(double[][][] edges, int id) {
+    public WorkThread(double[][][] edges, int genId ,int poolId) {
         this.edges = edges;
-        this.id = id;
+        this.genId = genId;
+        this.poolId = poolId;
     }
 
     @Override
@@ -24,7 +26,7 @@ class WorkThread implements Callable<Data> {
         Car cars[] = new Car[amountOfCars];
 
         for(int i = 0; i < amountOfCars; i++){
-            cars[i] = new Car(id);
+            cars[i] = new Car(poolId);
         }
         Properties carProperties =null;
         while(true) { 
@@ -35,21 +37,19 @@ class WorkThread implements Callable<Data> {
                 break;
             }
 
-            double[] nearestConesVector = carProperties.getNearestCones();
-            double[][] carinput = NeuralNet.predict(edges, nearestConesVector);
+            double[] ray = carProperties.getRay();
+            double[][] carinput = NeuralNet.predict(edges, ray);
             
             cars[0].sendControls(carinput[0][0],carinput[1][0]);
         }
 
-
- 
 
         for (int i = 0; i < amountOfCars; i++) {
             cars[i].close();
         }
        
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-        System.out.println( id + " " + timeStamp + " "+ carProperties.getProgress());
+        System.out.println(genId + " "+ poolId + " " + timeStamp + " "+ carProperties.getProgress());
 
         return  new Data(carProperties.getProgress(),carProperties.getLapTime(),edges);
     }

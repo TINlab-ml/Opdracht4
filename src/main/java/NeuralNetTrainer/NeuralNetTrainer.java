@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 public class NeuralNetTrainer {
 
 
-    public static double[][][] train(ArrayList<double[][][]> listOfnn,int id ) {
-        int programsThread =8;
+    public static double[][][] train(ArrayList<double[][][]> listOfnn,int genId ) {
+        int programsThread =6;
         
         ExecutorService executor = new ThreadPoolExecutor(programsThread,programsThread,0L ,TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(listOfnn.size()));
 
@@ -24,7 +24,7 @@ public class NeuralNetTrainer {
         List<WorkThread> workThreadList = new ArrayList<WorkThread>();
 
         for (int indexOfnn = 0; indexOfnn < listOfnn.size(); indexOfnn++) {
-            workThreadList.add(new WorkThread(listOfnn.get(indexOfnn),indexOfnn));
+            workThreadList.add(new WorkThread(listOfnn.get(indexOfnn),genId ,indexOfnn));
         }
 
         // https://www.journaldev.com/1090/java-callable-future-example
@@ -57,7 +57,7 @@ public class NeuralNetTrainer {
         }
 
         executor.shutdown();    
-        System.out.println("gen: " + id+" the best progress: "+dataArrayList.get(0).progress);
+        System.out.println("gen: " + genId+" the best progress: "+dataArrayList.get(0).progress);
         return dataArrayList.get(0).nn ; 
     }
 

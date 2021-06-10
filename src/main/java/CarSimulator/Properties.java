@@ -1,5 +1,7 @@
 package CarSimulator;
 
+import java.util.Arrays;
+
 public class Properties{
     private double[] lidarDistances;
     private long lidarHalfApertureAngle;
@@ -58,6 +60,35 @@ public class Properties{
         return collided;
     }
 
+
+    public double[] getRay(){
+        double[][] rays = new double[8][15]; 
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 15; j++) {
+                rays[i][j] = lidarDistances[i*j];
+            }
+        }
+
+        for (double[] ds : rays) {
+            Arrays.sort(ds);
+        }
+
+        double[] tempRays = new double[8];
+        for (int k = 0; k < rays.length; k++) {
+            if(1e20 == rays[k][0]){
+                tempRays[k] = 0;
+            }else{
+                tempRays[k] = rays[k][0];
+            }
+
+        }
+
+        return tempRays;
+    }
+
+
+
     /**
      * 
      * @return Array with the distance and angle to the 4 nearest cones sorted per cone
@@ -65,6 +96,8 @@ public class Properties{
     public double[] getNearestCones(){
         double[] nearestCones = new double[8];
         int amountOfLidars = lidarDistances.length;
+
+        System.out.println(amountOfLidars);
 
         double[] distanceOfNearestCones = {1e20, 1e20, 1e20, 1e20};
         double[] angleOfNearestCones = new double[4];
