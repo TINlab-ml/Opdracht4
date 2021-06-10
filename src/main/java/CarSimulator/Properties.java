@@ -76,11 +76,8 @@ public class Properties{
 
         double[] tempRays = new double[8];
         for (int k = 0; k < rays.length; k++) {
-            if(1e20 == rays[k][0]){
-                tempRays[k] = 0;
-            }else{
-                tempRays[k] = rays[k][0];
-            }
+
+            tempRays[k] = rays[k][0];
 
         }
 
