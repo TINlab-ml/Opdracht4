@@ -4,26 +4,23 @@ Authors
 - Ruben Hiemstra 0924010
 - Jordy Weijgertse 0974347
 */
+
 package NeuralNet;
 
-public class NeuralNet {
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
+public class NeuralNet {
     private double[][][] edges;
 
     /**
-     * @return list of matrices containing the weights
-     */
-    public double[][][] getEdges() {
-        return edges;
-    }
-
-    /**
-      * initializes neuralnet with given layer sizes from input to output with optional hidden layers
-      * @params layers is a list with the amount of nodes in each layer
-      */
-      
+     * initializes neuralnet with given layer sizes from input to output with optional hidden layers
+     * @params layers is a list with the amount of nodes in each layer
+     */   
     public NeuralNet(int[] layers) {
-
         edges = new double[layers.length - 1][][];
         double initEdgeWeight = 1;
 
@@ -45,11 +42,16 @@ public class NeuralNet {
         this.edges = edges;
     }
 
-    private void initEdgeWeights(int layer, double initEdgeWeight ){
-        for (int row = 0; row < edges[layer].length; row++) {
-            for (int col = 0; col < edges[layer][row].length; col++) {
-                edges[layer][row][col] = initEdgeWeight;
-            }
+
+    /**
+     * Iterative supervised training
+     * @param weightChange the learning rate by which the edges are adjusted each epoch
+     * @param epochs number of training iterations
+     */
+    public void fit(Data[] dataSet, double weightChange, int epochs) {
+        for (int epoch = 0; epoch < epochs; epoch++) {
+            System.out.println(epoch);
+            train(dataSet, weightChange);
         }
     }
 
@@ -70,7 +72,50 @@ public class NeuralNet {
         return output;
     }
 
+    /** 
+     * Serializes the weights to a file 
+     * @param fileName string can contain path and file extension
+    */
+    public void writeToFile(String fileName) throws IOException {
+        FileOutputStream fos = new FileOutputStream(fileName);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(this.edges);
+        oos.close();
+    }
 
+    /** 
+     * Retrieves a NeuralNet with the weight read from the given file
+     * @param fileName string can contain path and file extension
+    */
+    public static NeuralNet fromFile(String fileName) throws IOException {
+        try {
+            FileInputStream fis = new FileInputStream(fileName);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            NeuralNet neuralNet = new NeuralNet((double[][][]) ois.readObject())
+            ois.close();
+            return neuralNet;
+
+        } catch (Exception e) {
+            throw new IOException("Couldn't read NeuralNet from file");
+        }
+    }
+
+
+    private void initEdgeWeights(int layer, double initEdgeWeight ){
+        for (int row = 0; row < edges[layer].length; row++) {
+            for (int col = 0; col < edges[layer][row].length; col++) {
+                edges[layer][row][col] = initEdgeWeight;
+            }
+        }
+    }
+
+
+    /** 
+     * Changes every edge by +-weightChange and saves the change with the 
+     * lowest average error with the given dataset
+     * @param dataSet an array of Data (input and corresponding output values)
+     * @param weightChange the learning rate by which the edges are adjusted
+    */
     private void train(Data[] dataSet, double weightChange) {
         int[] bestEdgeIndex = new int[3];
         double bestEdgeWeightChange =0;
@@ -105,9 +150,9 @@ public class NeuralNet {
     }
 
     /**
-     *  calculate error of the vector 
+     * Calculate error of the vector 
      * @param data Data
-     * @return error as double 
+     * @return sum of squared errors as double 
      */
     private double calculateError(Data data) {
         double[][] target = data.getDesiredValue();
@@ -117,7 +162,7 @@ public class NeuralNet {
     }
 
     /**
-     * calculate the error of eache datapoint 
+     * Calculate the error of eache datapoint 
      * @param dataSet Data[]
      * @return returns the average error
      */
@@ -131,11 +176,8 @@ public class NeuralNet {
     }
 
     /**
-     * chance the edge and chance them back
-     * @param dataSet Data[]
-     * @param edgeIndex int[]
-     * @param weightChange double
-     * @return the avrrage error of the dataset with the edge chance  
+     * Change the edge and change them back
+     * @return the average error of the dataset with the edge change  
      */
     private double calculateErrorEdgeChange(Data[] dataSet, int[] edgeIndex, double weightChange) {
         edges[edgeIndex[0]][edgeIndex[1]][edgeIndex[2]] += weightChange;
@@ -144,12 +186,4 @@ public class NeuralNet {
         
         return avgError;
     }
-
-    public void fit(Data[] dataSet, double weightChange, int epochs) {
-        for (int epoch = 0; epoch < epochs; epoch++) {
-            System.out.println(epoch);
-            train(dataSet, weightChange);
-        }
-    }
-
 }
