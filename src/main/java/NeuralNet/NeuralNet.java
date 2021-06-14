@@ -91,7 +91,7 @@ public class NeuralNet {
         try {
             FileInputStream fis = new FileInputStream(fileName);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            NeuralNet neuralNet = new NeuralNet((double[][][]) ois.readObject())
+            NeuralNet neuralNet = new NeuralNet((double[][][]) ois.readObject());
             ois.close();
             return neuralNet;
 
