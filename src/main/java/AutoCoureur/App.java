@@ -1,6 +1,10 @@
 package AutoCoureur;
 
+import java.io.IOException;
+
 import CarSimulator.Car;
+import CarSimulator.Properties;
+import NeuralNet.NeuralNet;
 
 /**
  * Requirements:
@@ -82,10 +86,26 @@ public class App {
      * @param edgesFile A file where the weights of the edges are saved
      */
     public static void test(String edgesFile){
-        // get startvalues of edges from file
-        // create neural net
-        // start car
-        // control car using the neural net
+        try {
+            NeuralNet neuralNet = NeuralNet.fromFile(edgesFile);
+            Car car = new Car();
+
+            while (true) {
+                car.recvProperties();
+                Properties carData = car.getProperties();
+ 
+                double[] filteredData = {1,1,1,1,1,1,1,1}; // PLACEHOLDER
+
+                double steeringAngle = neuralNet.predict(filteredData)[0][0];
+                double targetVelocity = 0.9;    // default velocity, to be replaced by the neuralnet
+
+                car.sendControls(steeringAngle, targetVelocity);
+            }
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            return;
+        } 
     }
 
     /**
