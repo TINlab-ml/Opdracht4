@@ -15,7 +15,9 @@ public final class UserInputControls implements NativeKeyListener, NativeMouseMo
     private static UserInputControls singletonInstance;
 
     private double steeringAngle;
-    private double targetVelocity;
+    private double targetVelocity = 0;
+    private boolean record;
+    private boolean quit;
 
     private static int screenWidth = 1920;
     private static double steeringFactor = -0.1;
@@ -27,6 +29,8 @@ public final class UserInputControls implements NativeKeyListener, NativeMouseMo
      * initializes the system wide controls to control the car
      */
     private UserInputControls() {
+        record = false;
+        quit = false;
         try {
             LogManager.getLogManager().reset();
             Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
@@ -64,6 +68,20 @@ public final class UserInputControls implements NativeKeyListener, NativeMouseMo
         return targetVelocity;
     }
 
+    /**
+     * @return Current recording status
+     */
+    public boolean getRecordStatus(){
+        return record;
+    }
+
+    /**
+     * @return Current quiting status
+     */
+    public boolean getQuitingStatus(){
+        return quit;
+    }
+
     @Override
     public void nativeKeyPressed(NativeKeyEvent ev) {
         switch(ev.getKeyCode()){
@@ -73,6 +91,14 @@ public final class UserInputControls implements NativeKeyListener, NativeMouseMo
 
             case NativeKeyEvent.VC_S:
                 this.targetVelocity -= speedIncrement;
+                break;
+
+            case NativeKeyEvent.VC_R:
+                this.record = !this.record;
+                break;
+
+            case NativeKeyEvent.VC_ESCAPE:
+                this.quit = true;
                 break;
         }
     }

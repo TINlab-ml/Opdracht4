@@ -113,10 +113,12 @@ public class App {
             System.out.println("No file to init edges");
             nn = new NeuralNet(layers);
         }
-                
+        UserInputControls uic = UserInputControls.getInstance();
+        System.out.println("press ESC to save the NN and exit the program");        
         // train
-        nn.fit(dataSet, 0.1, 1000);
-
+        while(!uic.getQuitingStatus()){
+            nn.fit(dataSet, 0.1, 10);
+        }
         nn.stopExecutor();
 
         // save
@@ -124,6 +126,7 @@ public class App {
             nn.saveToJsonFile(edgesFile);
         }
         System.out.println(Arrays.deepToString(nn.getEdges()).replace("[", "{").replace("]", "}"));
+        System.exit(0);
     }
 
     /**
