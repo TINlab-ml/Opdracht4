@@ -12,6 +12,16 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
@@ -23,6 +33,11 @@ public class NeuralNet {
 
     private double[][][] edges;
     private ActivationFunction activationFunction ;
+    private static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+    public void stopExecutor(){
+        executor.shutdown();
+    }
 
     /**
      * @return list of matrices containing the weights
@@ -85,37 +100,114 @@ public class NeuralNet {
     }
 
 
-    private void train(Data[] dataSet, double weightChange) {
-        int[] bestEdgeIndex = new int[3];
-        double bestEdgeWeightChange =0;
-        double lowestAvgError = calculateAverageError(dataSet);
+    private void train(Data[] dataSet,  double weightChange) {
+        
+        List<Future<NNdata>> futureList = new ArrayList<Future<NNdata>>();
+        List<WorkThread> workThreadList = new ArrayList<WorkThread>();
+
 
         for (int layer = 0; layer < edges.length; layer++) {
             for (int row = 0; row < edges[layer].length; row++) {
                 for (int col = 0; col < edges[layer][row].length; col++) {
-
-                        int[] currentIndex = {layer, row, col};
-
-                        double avgErrorPlus = calculateErrorEdgeChange(dataSet, currentIndex, weightChange);
-                        double avgErrorMinus = calculateErrorEdgeChange(dataSet, currentIndex, -weightChange);
-                
-                        if (lowestAvgError < avgErrorPlus && lowestAvgError < avgErrorMinus ){
-                            continue;
-                        }
-
-                        if (avgErrorMinus < avgErrorPlus){
-                            lowestAvgError = avgErrorMinus ;  
-                            bestEdgeWeightChange = -weightChange;
-                        } else {
-                            lowestAvgError = avgErrorPlus;
-                            bestEdgeWeightChange = weightChange;
-                        }
-
-                        bestEdgeIndex = currentIndex;
-                    }
+                    workThreadList.add(new WorkThread(changeEdge(this.edges, new int[] {layer,row,col}, weightChange),dataSet));
+                    workThreadList.add(new WorkThread(changeEdge(this.edges, new int[] {layer,row,col}, -weightChange),dataSet));
                 }
             }
-        edges[bestEdgeIndex[0]][bestEdgeIndex[1]][bestEdgeIndex[2]] += bestEdgeWeightChange;
+        }
+
+
+        // https://www.journaldev.com/1090/java-callable-future-example
+        for (WorkThread workThread : workThreadList) {
+            futureList.add(executor.submit(workThread));
+        }
+        
+
+        ArrayList<NNdata> dataArrayList = new ArrayList<NNdata>();
+        for (Future<NNdata> future : futureList) {
+            try {
+                dataArrayList.add(future.get());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        
+        Collections.sort(dataArrayList, new Comparator<NNdata>() {
+            @Override
+            public int compare(NNdata d1, NNdata d2) {
+                return d1.error > d2.error ? -1 : (d1.error < d2.error) ? 1 : 0;
+            }
+        });
+
+
+
+        this.edges = dataArrayList.get(0).nn;
+
+
+        // int[] bestEdgeIndex = new int[3];
+        // double bestEdgeWeightChange =0;
+        // double lowestAvgError = calculateAverageError(dataSet);
+
+        // for (int layer = 0; layer < edges.length; layer++) {
+        //     for (int row = 0; row < edges[layer].length; row++) {
+        //         for (int col = 0; col < edges[layer][row].length; col++) {
+
+        //                 int[] currentIndex = {layer, row, col};
+
+        //                 double avgErrorPlus = calculateErrorEdgeChange(dataSet, currentIndex, weightChange);
+        //                 double avgErrorMinus = calculateErrorEdgeChange(dataSet, currentIndex, -weightChange);
+                
+        //                 if (lowestAvgError < avgErrorPlus && lowestAvgError < avgErrorMinus ){
+        //                     continue;
+        //                 }
+
+        //                 if (avgErrorMinus < avgErrorPlus){
+        //                     lowestAvgError = avgErrorMinus ;  
+        //                     bestEdgeWeightChange = -weightChange;
+        //                 } else {
+        //                     lowestAvgError = avgErrorPlus;
+        //                     bestEdgeWeightChange = weightChange;
+        //                 }
+
+        //                 bestEdgeIndex = currentIndex;
+        //             }
+        //         }
+        //     }
+
+
+        // edges[bestEdgeIndex[0]][bestEdgeIndex[1]][bestEdgeIndex[2]] += bestEdgeWeightChange;
+
+        
+    }
+
+    private double[][][] changeEdge( double[][][] edges ,int[] edgeIndex,double weightChange) {
+        edges[edgeIndex[0]][edgeIndex[1]][edgeIndex[2]] += weightChange;
+
+        double[][][] newEdges = new double[edges.length][][];
+
+
+        for (int layer = 0; layer < edges.length ;layer++) {
+            for (int row = 0; row < edges[layer].length; row++) {
+                newEdges[layer] = new double[edges[layer].length][edges[layer][0].length];
+            }
+        }
+
+        newEdges = copyOf3Dim(edges, newEdges);
+
+        edges[edgeIndex[0]][edgeIndex[1]][edgeIndex[2]] -= weightChange;
+        return newEdges;
+    } 
+
+    private double[][][] copyOf3Dim(double[][][] array, double[][][]copy) {
+
+        for (int x = 0; x < array.length; x++) {  
+            for (int y = 0; y < array[x].length; y++) {  
+                for (int z = 0; z < array[x][y].length; z++) {
+                    copy[x][y][z] = array[x][y][z];  
+                }  
+            }  
+        } 
+        return copy;
     }
 
     /**

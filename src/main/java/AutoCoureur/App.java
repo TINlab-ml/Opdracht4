@@ -42,7 +42,9 @@ public class App {
                     if(args.length == 2){
                         train(args[1], null);
                     } else if(args.length == 3){
+                        long start = System.currentTimeMillis();
                         train(args[1], args[2]);
+                        System.out.println(System.currentTimeMillis() -start);
                     }
                     break;
                     
@@ -113,7 +115,9 @@ public class App {
         }
                 
         // train
-        nn.fit(dataSet, 0.1, 10000);
+        nn.fit(dataSet, 0.1, 1000);
+
+        nn.stopExecutor();
 
         // save
         if(edgesFile != null){
