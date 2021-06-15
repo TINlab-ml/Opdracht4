@@ -114,10 +114,19 @@ public class App {
             nn = new NeuralNet(layers);
         }
         UserInputControls uic = UserInputControls.getInstance();
+        System.out.println("NeuralNet.cores "+ NeuralNet.cores);
         System.out.println("press ESC to save the NN and exit the program");        
         // train
+        int count = 0;
+        double newImprovement = 0;
+        double oldImprovement = 0;
+
         while(!uic.getQuitingStatus()){
-            nn.fit(dataSet, 0.1, 10);
+            newImprovement =  nn.fit(dataSet, 1, 10,count);
+            count++; 
+
+            System.out.println(" Improvement"+  (oldImprovement - newImprovement )+ "\n");
+            oldImprovement = newImprovement;
         }
         nn.stopExecutor();
 
@@ -149,7 +158,7 @@ public class App {
             Properties carData = car.getProperties();
 
             double[][] neuralNetInput = MatMath.fromList(carData.getRay(120, 8));
-
+            System.out.println(neuralNetInput[0][0]);
             double steeringAngle = neuralNet.predict(neuralNetInput)[0][0];
             double targetVelocity = 0.9;    // default velocity, to be replaced by the neuralnet
 

@@ -12,10 +12,12 @@ class WorkThread implements Callable<NNdata> {
     private double[][][] edges;
     private Data[] dataSet;
     private ActivationFunction activationFunction = new FastSigmoid() ;
+    private int[] edge;
 
-    public WorkThread(double[][][] edges, Data[] dataSet ) {
+    public WorkThread(double[][][] edges, Data[] dataSet, int[] edge ) {
         this.edges = edges;
         this.dataSet = dataSet;
+        this.edge = edge;
     }
     /**
      * Passes the input values through the neural net
@@ -61,8 +63,9 @@ class WorkThread implements Callable<NNdata> {
 
     @Override
     public NNdata call() throws Exception {
-        double avgError = calculateAverageError(dataSet);
-        return new NNdata(edges, avgError);
+        double[] avgError = new double[1]; 
+        avgError[0] = calculateAverageError(dataSet);
+        return new NNdata(edges,edge ,avgError[0]);
     }
     
 }

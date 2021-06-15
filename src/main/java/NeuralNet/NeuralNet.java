@@ -33,8 +33,9 @@ public class NeuralNet {
 
     private double[][][] edges;
     private ActivationFunction activationFunction ;
-    private static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
+    public static int cores  =  Runtime.getRuntime().availableProcessors()*4/4;
+    private static ExecutorService executor = Executors.newFixedThreadPool(cores);
+    
     public void stopExecutor(){
         executor.shutdown();
     }
@@ -100,7 +101,7 @@ public class NeuralNet {
     }
 
 
-    private void train(Data[] dataSet,  double weightChange) {
+    private double train(Data[] dataSet,  double weightChange) {
         
         List<Future<NNdata>> futureList = new ArrayList<Future<NNdata>>();
         List<WorkThread> workThreadList = new ArrayList<WorkThread>();
@@ -109,8 +110,9 @@ public class NeuralNet {
         for (int layer = 0; layer < edges.length; layer++) {
             for (int row = 0; row < edges[layer].length; row++) {
                 for (int col = 0; col < edges[layer][row].length; col++) {
-                    workThreadList.add(new WorkThread(changeEdge(this.edges, new int[] {layer,row,col}, weightChange),dataSet));
-                    workThreadList.add(new WorkThread(changeEdge(this.edges, new int[] {layer,row,col}, -weightChange),dataSet));
+                    int[] currentEdge = new int[] {layer,row,col};
+                    workThreadList.add(new WorkThread(changeEdge(this.edges, currentEdge, weightChange),dataSet,currentEdge));
+                    workThreadList.add(new WorkThread(changeEdge(this.edges, currentEdge, -weightChange),dataSet,currentEdge));
                 }
             }
         }
@@ -135,49 +137,14 @@ public class NeuralNet {
         Collections.sort(dataArrayList, new Comparator<NNdata>() {
             @Override
             public int compare(NNdata d1, NNdata d2) {
-                return d1.error > d2.error ? -1 : (d1.error < d2.error) ? 1 : 0;
+                return d1.error < d2.error ? -1 : (d1.error > d2.error) ? 1 : 0;
             }
         });
 
 
 
         this.edges = dataArrayList.get(0).nn;
-
-
-        // int[] bestEdgeIndex = new int[3];
-        // double bestEdgeWeightChange =0;
-        // double lowestAvgError = calculateAverageError(dataSet);
-
-        // for (int layer = 0; layer < edges.length; layer++) {
-        //     for (int row = 0; row < edges[layer].length; row++) {
-        //         for (int col = 0; col < edges[layer][row].length; col++) {
-
-        //                 int[] currentIndex = {layer, row, col};
-
-        //                 double avgErrorPlus = calculateErrorEdgeChange(dataSet, currentIndex, weightChange);
-        //                 double avgErrorMinus = calculateErrorEdgeChange(dataSet, currentIndex, -weightChange);
-                
-        //                 if (lowestAvgError < avgErrorPlus && lowestAvgError < avgErrorMinus ){
-        //                     continue;
-        //                 }
-
-        //                 if (avgErrorMinus < avgErrorPlus){
-        //                     lowestAvgError = avgErrorMinus ;  
-        //                     bestEdgeWeightChange = -weightChange;
-        //                 } else {
-        //                     lowestAvgError = avgErrorPlus;
-        //                     bestEdgeWeightChange = weightChange;
-        //                 }
-
-        //                 bestEdgeIndex = currentIndex;
-        //             }
-        //         }
-        //     }
-
-
-        // edges[bestEdgeIndex[0]][bestEdgeIndex[1]][bestEdgeIndex[2]] += bestEdgeWeightChange;
-
-        
+        return dataArrayList.get(0).error;
     }
 
     private double[][][] changeEdge( double[][][] edges ,int[] edgeIndex,double weightChange) {
@@ -210,58 +177,17 @@ public class NeuralNet {
         return copy;
     }
 
-    /**
-     *  calculate error of the vector 
-     * @param data Data
-     * @return error as double 
-     */
-    private double calculateError(Data data) {
-        double[][] target = data.getDesiredValue();
-        double[][] output = predict(data.getMatrix());
-
-        return MatMath.sumSquaredErrors(target, output);
-    }
-
-    /**
-     * calculate the error of eache datapoint 
-     * @param dataSet Data[]
-     * @return returns the average error
-     */
-    private double calculateAverageError(Data[] dataSet) {
-        double errorSum = 0;
-        for (Data data : dataSet) {
-            errorSum += calculateError(data);
-        }
-
-        return errorSum / dataSet.length;
-    }
-
-    /**
-     * chance the edge and chance them back
-     * @param dataSet Data[]
-     * @param edgeIndex int[]
-     * @param weightChange double
-     * @return the avrrage error of the dataset with the edge chance  
-     */
-    private double calculateErrorEdgeChange(Data[] dataSet, int[] edgeIndex, double weightChange) {
-        edges[edgeIndex[0]][edgeIndex[1]][edgeIndex[2]] += weightChange;
-        double avgError = calculateAverageError(dataSet);
-        edges[edgeIndex[0]][edgeIndex[1]][edgeIndex[2]] -= weightChange;
-        
-        return avgError;
-    }
-
-    public void fit(Data[] dataSet, double weightChange, int epochs) {
+    public double fit(Data[] dataSet, double weightChange, int epochs,int run) {
+        double error = 0; 
         for (int epoch = 0; epoch < epochs; epoch++) {
-            train(dataSet, weightChange);
+            error =  train(dataSet, weightChange);
 
-            System.out.print("\t epoch: "+epoch);
+            System.out.print("\t epoch: "+(epoch+(run*epochs)));
             if(epoch%10==0){
                 System.out.print("\n");
             }
         }
-        System.out.print("\n");
-
+        return error;
     }
 
 
