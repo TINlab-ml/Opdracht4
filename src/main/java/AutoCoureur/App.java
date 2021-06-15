@@ -103,7 +103,7 @@ public class App {
 
         
         // create neural net
-        int[] layers = { 8,6,4,1 };
+        int[] layers = {8,6,4,1 };
         NeuralNet nn = null;
         
         // get startvalues of edges if necessary
@@ -120,7 +120,7 @@ public class App {
         int count = 0;
         double newImprovement = 0;
         double oldImprovement = 0;
-        double weights = 1000;
+        double weights = 10000;
         while(!uic.getQuitingStatus()){
 
             newImprovement =  nn.fit(dataSet, weights, 10,count);
@@ -131,7 +131,7 @@ public class App {
             oldImprovement = newImprovement;
             if(diff ==0){
                 weights/=10;
-                System.out.println("weights has been changed ");
+                System.out.println("weights has been changed to "+ weights);
             }
         }
         nn.stopExecutor();
@@ -166,7 +166,10 @@ public class App {
             double[][] neuralNetInput = MatMath.fromList(carData.getRay(120, 8));
             System.out.println(neuralNetInput[0][0]);
             double steeringAngle = neuralNet.predict(neuralNetInput)[0][0];
-            double targetVelocity = 0.9;    // default velocity, to be replaced by the neuralnet
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {}
+            double targetVelocity = 0.5;    // default velocity, to be replaced by the neuralnet
 
             car.sendControls(steeringAngle, targetVelocity);
         }
