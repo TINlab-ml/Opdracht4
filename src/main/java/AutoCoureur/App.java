@@ -120,13 +120,19 @@ public class App {
         int count = 0;
         double newImprovement = 0;
         double oldImprovement = 0;
-
+        double weights = 1000;
         while(!uic.getQuitingStatus()){
-            newImprovement =  nn.fit(dataSet, 1, 10,count);
+
+            newImprovement =  nn.fit(dataSet, weights, 10,count);
             count++; 
 
-            System.out.println(" Improvement"+  (oldImprovement - newImprovement )+ "\n");
+            double diff = (oldImprovement - newImprovement );
+            System.out.println("\t Improvement "+  diff + "\n");
             oldImprovement = newImprovement;
+            if(diff ==0){
+                weights/=10;
+                System.out.println("weights has been changed ");
+            }
         }
         nn.stopExecutor();
 

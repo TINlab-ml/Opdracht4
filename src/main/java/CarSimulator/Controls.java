@@ -1,7 +1,7 @@
 package CarSimulator;
 
 public class Controls{
-    public static final double maxSteeringAngle = 90;
+    public static final double maxSteeringAngle = 45;
     public static final double minTargetVelocity = 0;
     public static final double maxTargetVelocity = 10;
 
@@ -11,8 +11,15 @@ public class Controls{
     Controls(){}
 
     Controls(double steeringAngle, double targetVelocity){
-        setSteeringAngle(steeringAngle);
+        setNormalizedSteeringAngle(steeringAngle);
         setTargetVelocity(targetVelocity);
+    }
+
+    public void setNormalizedSteeringAngle(double normalizedSteeringAngle) {
+        double temPormalizedSteeringAngle = (normalizedSteeringAngle - .5) * 2 * maxSteeringAngle;
+        // System.out.println(temPormalizedSteeringAngle);
+        setSteeringAngle(temPormalizedSteeringAngle);
+
     }
 
     /**
