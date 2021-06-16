@@ -93,17 +93,15 @@ public class App {
             Controls control = carDataSet.getFirstControls();
             
             dataSet[indexDataset] = new Data(
-                properties.getRay(120,8), 
-                new double[]{
-                    control.getSteeringAngle()
-                }
+                properties.getRay(120,4), 
+                new double[]{control.getNormalizedSteeringAngle()}
             );
         }
 
 
         
         // create neural net
-        int[] layers = {8,6,4,1 };
+        int[] layers = {4,8,3,1 };
         NeuralNet nn = null;
         
         // get startvalues of edges if necessary
@@ -120,10 +118,10 @@ public class App {
         int count = 0;
         double newImprovement = 0;
         double oldImprovement = 0;
-        double weights = 10000;
+        double weights = 1;
         while(!uic.getQuitingStatus()){
 
-            newImprovement =  nn.fit(dataSet, weights, 10,count);
+            newImprovement =  nn.fit(dataSet, weights, 100,count);
             count++; 
 
             double diff = (oldImprovement - newImprovement );
@@ -163,13 +161,12 @@ public class App {
             car.recvProperties();
             Properties carData = car.getProperties();
 
-            double[][] neuralNetInput = MatMath.fromList(carData.getRay(120, 8));
+            double[][] neuralNetInput = MatMath.fromList(carData.getRay(120, 4));
             System.out.println(neuralNetInput[0][0]);
-            double steeringAngle = neuralNet.predict(neuralNetInput)[0][0];
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {}
-            double targetVelocity = 0.5;    // default velocity, to be replaced by the neuralnet
+            double steerinFactor = 1;
+            double steeringAngle = neuralNet.predict(neuralNetInput)[0][0]*steerinFactor;
+            
+            double targetVelocity = 0.9;    // default velocity, to be replaced by the neuralnet
 
             car.sendControls(steeringAngle, targetVelocity);
         }

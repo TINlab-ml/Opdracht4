@@ -82,7 +82,7 @@ public class Properties{
 
         double[] tempRays = new double[outputVector];
         for (int k = 0; k < rays.length; k++) {
-            tempRays[k] = normalize(rays[k][0], 0.5, 2) ;
+            tempRays[k] = normalize(rays[k][0], 0.5, 4) ;
         }
 
         return tempRays;

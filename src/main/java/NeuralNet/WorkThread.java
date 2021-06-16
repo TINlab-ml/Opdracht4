@@ -3,7 +3,7 @@ package NeuralNet;
 import java.util.concurrent.Callable;
 
 import NeuralNet.ActivationFunction.ActivationFunction;
-import NeuralNet.ActivationFunction.FastSigmoid;
+import NeuralNet.ActivationFunction.Sigmoid;
 
 class WorkThread implements Callable<NNdata> {
 
@@ -11,7 +11,7 @@ class WorkThread implements Callable<NNdata> {
 
     private double[][][] edges;
     private Data[] dataSet;
-    private ActivationFunction activationFunction = new FastSigmoid() ;
+    private ActivationFunction activationFunction = new Sigmoid() ;
     private int[] edge;
 
     public WorkThread(double[][][] edges, Data[] dataSet, int[] edge ) {

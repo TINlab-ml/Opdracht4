@@ -17,10 +17,12 @@ public class Controls{
 
     public void setNormalizedSteeringAngle(double normalizedSteeringAngle) {
         double temPormalizedSteeringAngle = (normalizedSteeringAngle - .5) * 2 * maxSteeringAngle;
-        // System.out.println(temPormalizedSteeringAngle);
         setSteeringAngle(temPormalizedSteeringAngle);
-
     }
+    public double getNormalizedSteeringAngle() {
+        return  (getSteeringAngle() /(maxSteeringAngle *2)) +.5;
+    }
+
 
     /**
      * 
